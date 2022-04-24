@@ -1,5 +1,8 @@
 # promptees ^0.0.1
 
+[![npm (scoped)](https://img.shields.io/npm/v/promptees.svg)](https://www.npmjs.com/package/promptees/)
+[![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/promptees.svg)](https://www.npmjs.com/package/promptees)
+
 A small tool to make it easy to create an interactive chatbot.
 
 ## Notes
