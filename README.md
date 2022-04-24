@@ -8,7 +8,7 @@ A small tool to make it easy to create an interactive chatbot.
 
 This is my first library. Maybe you'll see some stupid things here. I'm planning to improve this library soon.
 
-&lt;img flowchart here [TODO] &gt;
+<img src='./promptees.svg'>
 
 ## Install
 
@@ -33,9 +33,6 @@ async function on_message(user: string, message: string) {
 
 	bot.reply(user, `Hello! How are you, ${user}?`);
 
-	// the function will stops here until the user sends the message again
-	// when the user sends the 2nd message, the function won't reach here because _prompt.isPrompting() function at the top ^
-	// the 2nd argument of _prompt.isPrompting is what will returned here
 	const answer = await _prompt.waitForResponse(user);
 
 	bot.reply(user, `${answer} too! Nice to meet you, ${user}...!`);
@@ -60,4 +57,4 @@ BOT => I'm fine! too! Nice to meet you, Rick!
 BOT => Everything is good. too! Nice to meet you, Bob!
 ```
 
-See this example in action by running `npm test`
+> See this example in action by running `npm test`
