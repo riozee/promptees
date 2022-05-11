@@ -1,6 +1,6 @@
 {
 	"name": "promptees",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A small tool to make it easy to create an interactive chatbot.",
 	"main": "index.js",
 	"types": "index.d.ts",

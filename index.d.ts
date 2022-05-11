@@ -1,4 +1,4 @@
-declare type opts<OnTimeout> = {
+export declare type PrompteesOpts<OnTimeout> = {
     /**
      * Timeout in milliseconds. If `returnPrompt()` is not called after the timeout has elapsed, the `waitForResponse()` will return `{timeout: true}` or the specified onTimeout return value.
      */
@@ -8,11 +8,21 @@ declare type opts<OnTimeout> = {
      */
     onTimeout?: () => OnTimeout;
 };
-export default class Prompt<Input, OnTimeout = void> {
+export default class Prompt<Input, OnTimeout = {
+    timeout: true;
+}> {
     private promptees;
     private timeout?;
     private onTimeout?;
-    constructor(opts?: opts<OnTimeout>);
+    /**
+     * If you will not use timeout, you can write the same type into both generic type parameter.
+     * Like this:
+     * ```ts
+     * const promptees = new Prompt<Same, Same>();
+     * ```
+     * This will eliminate `{timeout: true}` from the return type of `waitForResponse()`.
+     */
+    constructor(opts?: PrompteesOpts<OnTimeout>);
     /**
      * Check if identifier is waiting for an input.
      *
@@ -36,8 +46,5 @@ export default class Prompt<Input, OnTimeout = void> {
      *
      * @resolves Value passed to `returnPrompt()` with the same identifier.
      */
-    waitForResponse(identifier: string, opts?: opts<OnTimeout>): Promise<Input | OnTimeout | {
-        timeout: true;
-    }>;
+    waitForResponse<oInput = Input, oOnTimeout = OnTimeout>(identifier: string, opts?: PrompteesOpts<oOnTimeout>): Promise<oInput | oOnTimeout>;
 }
-export {};

@@ -15,7 +15,12 @@ $ npm install promptees
 
 ## Changelog
 
-### New Major Version 1
+### 1.0.1
+
+-   Added `PrompteesOpts` type to exported member.
+-   Typescript fixes.
+
+### 1.0.0
 
 -   `isPrompting()` is now splitted into two, `isPrompting()` and `returnPrompt()`. Now it's possible to check first and then do some processing before resolving to `waitForResponse()`. `returnPrompt()` is behaving the same as `isPrompting()` in the previous version. So you should rename `isPrompting()` to `returnPrompt()` if you have a working code using the previous version.
 -   Typescript intellisense is now possible using generic type parameter.
@@ -24,7 +29,8 @@ $ npm install promptees
 ## Usage
 
 ```ts
-const Prompt = require('promptees');
+import Prompt, { PrompteesOpts } from 'promptees';
+
 const _prompt = new Prompt<string, { foo: string }>({
 	timeout: 5000,
 	onTimeout: () => ({ foo: 'oops!' }),

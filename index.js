@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Prompt = /** @class */ (function () {
+    /**
+     * If you will not use timeout, you can write the same type into both generic type parameter.
+     * Like this:
+     * ```ts
+     * const promptees = new Prompt<Same, Same>();
+     * ```
+     * This will eliminate `{timeout: true}` from the return type of `waitForResponse()`.
+     */
     function Prompt(opts) {
         this.promptees = {};
         if (opts === null || opts === void 0 ? void 0 : opts.timeout)
