@@ -5,32 +5,62 @@ const expect = chai.expect;
 import Prompt from './index';
 
 describe('Test promptees', () => {
-	it('Simulate incoming messages', () => {
-		const _prompt = new Prompt();
-		async function on_message(user: string, message: string) {
-			console.log(user, '=>', message);
-			if (_prompt.isPrompting(user, message)) return;
+	const prompt1 = new Prompt<string>();
 
-			if (user === 'Bob') {
-				expect(message).to.be.equal('Hi bot');
-			} else if (user === 'Rick') {
-				expect(message).to.be.equal('Hello, bot!');
-			}
-
-			console.log('BOT', '=>', `Hello! How are you, ${user}?`);
-			const response = await _prompt.waitForResponse(user);
-			console.log('BOT', '=>', `${response} too! Nice to meet you, ${user}!`);
-
-			if (user === 'Bob') {
-				expect(response).to.be.equal('Everything is good.');
-			} else if (user === 'Rick') {
-				expect(response).to.be.equal("I'm fine!");
-			}
-		}
-
-		on_message('Bob', 'Hi bot');
-		on_message('Rick', 'Hello, bot!');
-		on_message('Rick', "I'm fine!");
-		on_message('Bob', 'Everything is good.');
+	it('no timeout', async () => {
+		expect(await prompt1.waitForResponse('user1')).to.be.equal('bar');
 	});
+
+	setTimeout(() => prompt1.returnPrompt('user1', 'bar'), 1000);
+
+	const prompt2 = new Prompt<string>({
+		timeout: 1000,
+	});
+
+	it('with timeout', async () => {
+		expect(await prompt2.waitForResponse('user2')).to.be.deep.equal({ timeout: true });
+	});
+
+	setTimeout(() => prompt2.returnPrompt('user2', 'boo'), 3000);
+
+	const prompt3 = new Prompt<string, string>({
+		timeout: 1000,
+		onTimeout: () => 'oops!',
+	});
+
+	it('with timeout and onTimeout', async () => {
+		expect(await prompt3.waitForResponse('user3')).to.be.equal('oops!');
+	});
+
+	setTimeout(() => prompt3.returnPrompt('user3', 'foo'), 2000);
+
+	const prompt4 = new Prompt<string>({
+		timeout: 0,
+	});
+
+	it('override with timeout', async () => {
+		expect(
+			await prompt4.waitForResponse('user4', {
+				timeout: 1000,
+			})
+		).to.be.deep.equal({ timeout: true });
+	});
+
+	setTimeout(() => prompt4.returnPrompt('user4', 'beez'), 3000);
+
+	const prompt5 = new Prompt<string, number>({
+		timeout: 0,
+		onTimeout: () => 200,
+	});
+
+	it('override with timeout and onTimeout', async () => {
+		expect(
+			await prompt5.waitForResponse('user5', {
+				timeout: 1000,
+				onTimeout: () => 404,
+			})
+		).to.be.equal(404);
+	});
+
+	setTimeout(() => prompt5.returnPrompt('user5', 'blah'), 3000);
 });

@@ -1,6 +1,6 @@
 {
 	"name": "promptees",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "A small tool to make it easy to create an interactive chatbot.",
 	"main": "index.js",
 	"types": "index.d.ts",
@@ -13,7 +13,10 @@
 	},
 	"keywords": [
 		"prompt",
-		"async"
+		"async",
+		"chatbot",
+		"interactive",
+		"bot"
 	],
 	"author": "riozec",
 	"license": "MIT",
