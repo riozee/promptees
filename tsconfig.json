@@ -2,7 +2,8 @@
 	"compilerOptions": {
 		"module": "CommonJS",
 		"target": "ES5",
+		"lib": ["ES2015", "DOM"],
 		"declaration": true
 	},
-	"include": ["index.ts"]
+	"include": ["index.ts", "test.ts"]
 }

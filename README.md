@@ -15,6 +15,12 @@ $ npm install promptees
 
 ## Changelog
 
+### 2.0.0
+
+-   `returnPrompt()` is now an **async** function, to support the **loop** feature.
+-   Added new feature: **loop**
+-   Removed all dependencies.
+
 ### 1.0.1
 
 -   Added `PrompteesOpts` type to exported member.
@@ -24,65 +30,80 @@ $ npm install promptees
 
 -   `isPrompting()` is now splitted into two, `isPrompting()` and `returnPrompt()`. Now it's possible to check first and then do some processing before resolving to `waitForResponse()`. `returnPrompt()` is behaving the same as `isPrompting()` in the previous version. So you should rename `isPrompting()` to `returnPrompt()` if you have a working code using the previous version.
 -   Typescript intellisense is now possible using generic type parameter.
--   Added new feature: timeout.
+-   Added new feature: **timeout**.
 
 ## Usage
 
 ```ts
-import Prompt, { PrompteesOpts } from 'promptees';
+// test.ts
+import Prompt from 'promptees';
 
-const _prompt = new Prompt<string, { foo: string }>({
-	timeout: 5000,
-	onTimeout: () => ({ foo: 'oops!' }),
+const promptees = new Prompt({
+	timeout: 3000,
+	onTimeout: () => 'timed out',
+	loopWhen: (input) => input === 'roll',
+	onLoop: (input) => console.log('<BOT>', `What's ${input}?`),
 });
 
-// message handler
-async function on_message(user: string, message: string) {
-	logger(user, message);
-
-	// this is necessary to catch the user response
-	// put this line before any script in your message handler
-	if (_prompt.isPrompting(user)) {
-		return _prompt.returnPrompt(user, message);
+async function onMessage(user: string, message: string) {
+	console.log(`<${user}>`, message);
+	if (promptees.isPrompting(user)) {
+		return await promptees.returnPrompt(user, message);
 	}
-
-	bot.reply(user, `Tell me your age.`);
-
-	const answer = await _prompt.waitForResponse(user);
-
-	if ('foo' in answer && answer.foo === 'oops!') {
-		bot.reply(user, `Yo, are you still there?`);
-	} else if (+answer >= 18) {
-		bot.reply(user, `You are allowed.`);
-	} else if (+answer < 18) {
-		bot.reply(user, `Do not enter.`);
+	console.log('<BOT>', 'Hi, tell me your age.');
+	const age = await promptees.waitForResponse(user);
+	if (age === 'timed out') {
+		console.log('<BOT>', 'Are you still there?');
+	} else if (+age < 18) {
+		console.log('<BOT>', 'You are not allowed');
+	} else {
+		console.log('<BOT>', 'You are allowed.');
 	}
 }
 
-// simulate the incoming message
-on_message('Bob', 'Hi bot');
-on_message('Bob', '17');
-
-on_message('Rick', 'Yo');
-on_message('Rick', '23');
-
-on_message('Jeff', '...');
+(async () => {
+	onMessage('Lina', 'Hi bot');
+	await pause(500);
+	onMessage('Lina', '14');
+	await pause(500);
+	console.log('============');
+	onMessage('Jeff', 'Hello');
+	await pause(5000);
+	console.log('============');
+	onMessage('Rick', 'roll');
+	await pause(500);
+	onMessage('Rick', 'roll');
+	await pause(500);
+	onMessage('Rick', 'roll');
+	await pause(500);
+	onMessage('Rick', 'roll');
+	await pause(500);
+	onMessage('Rick', '35');
+})();
 ```
 
 Output:
 
-```yaml
-Bob: Hi bot
-BOT: Tell me your age.
-Bob: 17
-BOT: Do not enter.
-Rick: Yo
-BOT: Tell me your age.
-Rick: 23
-BOT: You are allowed.
-Jeff: ...
-BOT: Tell me your age.
-BOT: Yo, are you still there?
+```
+<Lina> Hi bot
+<BOT> Hi, tell me your age.
+<Lina> 14
+<BOT> You are not allowed
+============
+<Jeff> Hello
+<BOT> Hi, tell me your age.
+<BOT> Are you still there?
+============
+<Rick> roll
+<BOT> Hi, tell me your age.
+<Rick> roll
+<BOT> What's roll?
+<Rick> roll
+<BOT> What's roll?
+<Rick> roll
+<BOT> What's roll?
+<Rick> 35
+<BOT> You are allowed.
 ```
 
 <center><i>See my bot project: <a href='https://github.com/riozec/miki-whatsapp-bot'>Miki Bot</a>.</i></center>

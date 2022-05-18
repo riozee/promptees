@@ -1,4 +1,4 @@
-export declare type PrompteesOpts<OnTimeout> = {
+export declare type PrompteesOpts<Input, OnTimeout> = {
     /**
      * Timeout in milliseconds. If `returnPrompt()` is not called after the timeout has elapsed, the `waitForResponse()` will return `{timeout: true}` or the specified onTimeout return value.
      */
@@ -7,6 +7,14 @@ export declare type PrompteesOpts<OnTimeout> = {
      * Function called when the timeout has elapsed, and its return value will be returned by `waitForResponse()`.
      */
     onTimeout?: () => OnTimeout;
+    /**
+     * If it returns true, it will not resolve the promise, and call the function in `onLoop`.
+     */
+    loopWhen?: (input: Input) => Promise<boolean> | boolean;
+    /**
+     * Function called when `loopWhen` returns true.
+     */
+    onLoop?: (input: Input) => any;
 };
 export default class Prompt<Input, OnTimeout = {
     timeout: true;
@@ -14,6 +22,8 @@ export default class Prompt<Input, OnTimeout = {
     private promptees;
     private timeout?;
     private onTimeout?;
+    private loopWhen?;
+    private onLoop?;
     /**
      * If you will not use timeout, you can write the same type into both generic type parameter.
      * Like this:
@@ -22,7 +32,7 @@ export default class Prompt<Input, OnTimeout = {
      * ```
      * This will eliminate `{timeout: true}` from the return type of `waitForResponse()`.
      */
-    constructor(opts?: PrompteesOpts<OnTimeout>);
+    constructor(opts?: PrompteesOpts<Input, OnTimeout>);
     /**
      * Check if identifier is waiting for an input.
      *
@@ -35,7 +45,7 @@ export default class Prompt<Input, OnTimeout = {
      * @param value The value returned by `waitForResponse()`
      * @returns {boolean} True if identifier is in promptees list. Otherwise False.
      */
-    returnPrompt(identifier: string, value: Input): boolean;
+    returnPrompt(identifier: string, value: Input): Promise<boolean>;
     /**
      * Prompt the user!
      *
@@ -46,5 +56,5 @@ export default class Prompt<Input, OnTimeout = {
      *
      * @resolves Value passed to `returnPrompt()` with the same identifier.
      */
-    waitForResponse<oInput = Input, oOnTimeout = OnTimeout>(identifier: string, opts?: PrompteesOpts<oOnTimeout>): Promise<oInput | oOnTimeout>;
+    waitForResponse<oInput = Input, oOnTimeout = OnTimeout>(identifier: string, opts?: PrompteesOpts<oInput, oOnTimeout>): Promise<oInput | oOnTimeout>;
 }
